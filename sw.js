@@ -24,4 +24,7 @@ self.addEventListener('activate', event => {
 	console.log('service worker has been activated');
 }) 
 
- 
+
+self.addEventListener('fetch', event => {
+	console.log(event);
+});
