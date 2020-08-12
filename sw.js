@@ -1,13 +1,34 @@
+const staticCacheName = 'site-static';
+const assets = [
+	'/',
+	'/index.html',
+	'/js/app.js',
+	'/js/ui.js',
+	'/js/materialize.min.js',
+	'/css/style.css',
+	'/css/materialize.min.css',
+	'/img/dish.png',
+	'https://fonts.googleapis.com/icon?family=Material+Icons',
+	'https://fonts.gstatic.com/s/materialicons/v54/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'
+];
+
+
 /**
  *
  * Install service worker
  *
  * Only triggered once when install service worker
- * If there's nothing changes in this file, so it won't be triggered
+ * Only triggered when there's some changes in this file 
  *
  */
 self.addEventListener('install', event => {
 	console.log('service worker has been installed');
+	event.waitUntil(
+		caches.open(staticCacheName).then(cache => {
+			cache.addAll(assets);
+			console.log('caching shell assets');
+		})
+	);
 })
 
 
@@ -26,5 +47,19 @@ self.addEventListener('activate', event => {
 
 
 self.addEventListener('fetch', event => {
-	console.log(event);
+	console.log(`Fetching ${event}`);
+
+	/**
+	 *
+	 * If there's something match in the caches, then intercept it for fetching the resources
+	 *
+	 * The benefit is we could run the program when we're offline
+	 *
+	 */
+	event.respondWith(
+		caches.match(event.request)
+		.then(cacheRes => {
+			return cacheRes || fetch(event.request);
+		})
+	)
 });
