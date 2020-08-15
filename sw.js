@@ -91,23 +91,25 @@ self.addEventListener('fetch', event => {
 	 * The benefit is we could run the program when we're offline
 	 *
 	 */
-	event.respondWith(
-		caches.match(event.request)
-		.then(cacheRes => {
-			return cacheRes || fetch(event.request).then(fetchRes => {
-				return caches.open(dynamicCacheName).then(cache => {
+	// event.respondWith(
+	// 	caches.match(event.request)
+	// 	.then(cacheRes => {
+	// 		return cacheRes || fetch(event.request).then(fetchRes => {
+	// 			return caches.open(dynamicCacheName).then(cache => {
 
-					// cache.put(key, value)
-					cache.put(event.request.url, fetchRes.clone());
-					limitCacheSize(dynamicCacheName, 15);
-					return fetchRes
-				})
-			});
-		})
-		.catch(() => {
-			if (event.request.url.indexOf('.html') > -1) {	// it means if its length > 0, beacuse indexOf array starts from 0 so length of -1 is 0 
-				return caches.match('pages/contact.html');
-			}
-		})
-	)
+	// 				// cache.put(key, value)
+	// 				cache.put(event.request.url, fetchRes.clone());
+	// 				limitCacheSize(dynamicCacheName, 15);
+	// 				return fetchRes
+	// 			})
+	// 		});
+	// 	})
+	// 	.catch(() => {
+	// 		if (event.request.url.indexOf('.html') > -1) {	// it means if its length > 0, beacuse indexOf array starts from 0 so length of -1 is 0 
+	// 			return caches.match('pages/fallback.html');
+	// 		}
+	// 	})
+	// )
+
+	
 });
