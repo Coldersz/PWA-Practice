@@ -82,7 +82,7 @@ self.addEventListener('activate', event => {
 
 
 self.addEventListener('fetch', event => {
-	console.log('Fetching', event);
+	// console.log('Fetching', event);
 
 	/**
 	 *
