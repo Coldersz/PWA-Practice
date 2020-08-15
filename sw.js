@@ -1,5 +1,5 @@
 const staticCacheName = 'site-static-v1.1';
-const dynamicCache = 'site-dynamic-v1';
+const dynamicCacheName = 'site-dynamic-v1.2';
 const assets = [
 	'/',
 	'/index.html',
@@ -10,7 +10,8 @@ const assets = [
 	'/css/materialize.min.css',
 	'/img/dish.png',
 	'https://fonts.googleapis.com/icon?family=Material+Icons',
-	'https://fonts.gstatic.com/s/materialicons/v54/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'
+	'https://fonts.gstatic.com/s/materialicons/v54/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2',
+	'/pages/fallback.html'
 ];
 
 
@@ -50,7 +51,7 @@ self.addEventListener('activate', event => {
 			console.log(keys);
 			return Promise.all(
 				keys
-				.filter(key => key !== staticCacheName)
+				.filter(key => key !== staticCacheName && key !== dynamicCacheName)
 				.map(key => caches.delete(key))
 			)
 		})
@@ -75,13 +76,18 @@ self.addEventListener('fetch', event => {
 		caches.match(event.request)
 		.then(cacheRes => {
 			return cacheRes || fetch(event.request).then(fetchRes => {
-				return caches.open(dynamicCache).then(cache => {
+				return caches.open(dynamicCacheName).then(cache => {
 
 					// cache.put(key, value)
 					cache.put(event.request.url, fetchRes.clone());
 					return fetchRes
 				})
 			});
+		})
+		.catch(() => {
+			if (event.request.url.indexOf('.html') > -1) {	// it means if its length > 0, beacuse indexOf array starts from 0 so length of -1 is 0 
+				return caches.match('pages/contact.html');
+			}
 		})
 	)
 });
