@@ -17,6 +17,25 @@ const assets = [
 
 /**
  *
+ * Cache size limit function
+ *
+ * This function is for limiting cache size
+ * it'll be call the function itself when the length of caches is more than 'size' that we input in parameter
+ * when the function is called, it'll be delete the caches that have index 0 (first index in array)
+ *
+ */
+function limitCacheSize (name, size) {
+	caches.open(name).then(cache => {
+		cache.keys().then(keys => {
+			if (keys.length > size) {
+				cache.delete(keys[0]).then(limitCacheSize(name, size))
+			}
+		})
+	})
+}
+
+/**
+ *
  * Install service worker
  *
  * Only triggered once when install service worker
@@ -80,6 +99,7 @@ self.addEventListener('fetch', event => {
 
 					// cache.put(key, value)
 					cache.put(event.request.url, fetchRes.clone());
+					limitCacheSize(dynamicCacheName, 15);
 					return fetchRes
 				})
 			});
