@@ -33,3 +33,14 @@ function renderRecipe (data, id) {
 
 	recipes.innerHTML += html
 }
+
+
+/**
+ *
+ * Method for remove the document data from web page
+ *
+ */
+function removeRecipe (id) {
+	const recipe = document.querySelector(`.recipe[data-id=${id}`)
+	recipe.remove();
+}
