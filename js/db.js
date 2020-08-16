@@ -1,3 +1,24 @@
+/**
+ *
+ * Handling offline data
+ *
+ * enablePersistence() is for copy of the Cloud Firestore data and store the data into indexedDB in browser that your app is actively using,
+ * so your app can access the data when the device is offline.
+ * You can write, read, listen to, and query the cached data.
+ * When the device comes back online,
+ * Cloud Firestore synchronizes any local changes made by your app to the Cloud Firestore backend.
+ *
+ */
+db.enablePersistence().catch(err => {
+	if (err.code == 'failed-precondition') {
+		// probably multiple tabs open at once
+		console.log('persistence failed');
+	} else if (err.code == 'unimplemented') {
+		// lack of browser support
+		console.log('persistence is not available');
+	}
+});
+
 
 /**
  *

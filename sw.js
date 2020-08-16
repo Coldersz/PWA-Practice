@@ -1,5 +1,5 @@
-const staticCacheName = 'site-static-v1.1';
-const dynamicCacheName = 'site-dynamic-v1.2';
+const staticCacheName = 'site-static-v2';
+const dynamicCacheName = 'site-dynamic-v2';
 const assets = [
 	'/',
 	'/index.html',
@@ -84,32 +84,35 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
 	// console.log('Fetching', event);
 
-	/**
-	 *
-	 * If there's something match in the caches, then intercept it for fetching the resources
-	 *
-	 * The benefit is we could run the program when we're offline
-	 *
-	 */
-	// event.respondWith(
-	// 	caches.match(event.request)
-	// 	.then(cacheRes => {
-	// 		return cacheRes || fetch(event.request).then(fetchRes => {
-	// 			return caches.open(dynamicCacheName).then(cache => {
+	// it means if ('firestore.googleapis.com' is not in the request url)
+	if (event.request.url.indexOf('firestore.googleapis.com') === -1) {	
 
-	// 				// cache.put(key, value)
-	// 				cache.put(event.request.url, fetchRes.clone());
-	// 				limitCacheSize(dynamicCacheName, 15);
-	// 				return fetchRes
-	// 			})
-	// 		});
-	// 	})
-	// 	.catch(() => {
-	// 		if (event.request.url.indexOf('.html') > -1) {	// it means if its length > 0, beacuse indexOf array starts from 0 so length of -1 is 0 
-	// 			return caches.match('pages/fallback.html');
-	// 		}
-	// 	})
-	// )
+		/**
+		 *
+		 * If there's something match in the caches, then intercept it for fetching the resources
+		 *
+		 * The benefit is we could run the program when we're offline
+		 *
+		 */
+		event.respondWith(
+			caches.match(event.request)
+			.then(cacheRes => {
+				return cacheRes || fetch(event.request).then(fetchRes => {
+					return caches.open(dynamicCacheName).then(cache => {
 
+						// cache.put(key, value)
+						cache.put(event.request.url, fetchRes.clone());
+						limitCacheSize(dynamicCacheName, 15);
+						return fetchRes
+					})
+				});
+			})
+			.catch(() => {
+				if (event.request.url.indexOf('.html') > -1) {	// it means if its length > 0, beacuse indexOf array starts from 0 so length of -1 is 0 
+					return caches.match('pages/fallback.html');
+				}
+			})
+		)
+	}
 	
 });
